@@ -20,7 +20,7 @@ public class CodeGenerator {
     }
 
     private static void generate() {
-        FastAutoGenerator.create("jdbc:mysql://101.37.246.72:3306/map?serverTimezone=GMT%2b8", "root", "jinNIU123456!")
+        FastAutoGenerator.create("jdbc:mysql://101.37.246.72:3306/map?serverTimezone=GMT%2B8", "root", "jinNIU123456!")
                 .globalConfig(builder -> {
                     builder.author("xavi") // 设置作者
                             .enableSwagger() // 开启 swagger 模式
@@ -33,7 +33,11 @@ public class CodeGenerator {
                             .pathInfo(Collections.singletonMap(OutputFile.mapperXml, proj_dir + "\\src\\main\\resources\\mapper\\")); // 设置mapperXml生成路径
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("user") // 设置需要生成的表名
+                    builder.entityBuilder().enableLombok();//启用lombok
+                    builder.mapperBuilder().enableMapperAnnotation();//为mapper添加@Mapper注解
+                    builder.controllerBuilder().enableHyphenStyle()//开启驼峰转连字符
+                            .enableRestStyle();//为Controller添加@RestController注解
+                    builder.addInclude("test") // 设置需要生成的表名
                             .addTablePrefix("t_", "c_"); // 设置过滤表前缀
                 })
 //                .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板
