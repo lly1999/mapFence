@@ -1,6 +1,6 @@
 package com.example.mapfence.service;
 
-import com.example.mapfence.entity.Test;
+import com.example.mapfence.entity.ProblemRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author xavi
- * @since 2022-09-24
+ * @since 2022-09-26
  */
-public interface ITestService extends IService<Test> {
+public interface IProblemRecordService extends IService<ProblemRecord> {
 
 }
