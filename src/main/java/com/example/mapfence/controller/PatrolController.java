@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.List;
 
-import com.example.mapfence.service.ITestService;
-import com.example.mapfence.entity.Test;
+import com.example.mapfence.service.IPatrolService;
+import com.example.mapfence.entity.Patrol;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,47 +18,47 @@ import org.springframework.web.bind.annotation.RestController;
  * </p>
  *
  * @author xavi
- * @since 2022-09-24
+ * @since 2022-09-26
  */
 @RestController
-@RequestMapping("/test")
-public class TestController {
+@RequestMapping("//patrol")
+public class PatrolController {
 
     @Resource
-    private ITestService testService;
+    private IPatrolService patrolService;
 
     // 新增或者更新
     @PostMapping
-    public Boolean save(@RequestBody Test test) {
-        return testService.saveOrUpdate(test);
+    public Boolean save(@RequestBody Patrol patrol) {
+        return patrolService.saveOrUpdate(patrol);
     }
 
     @DeleteMapping("/{id}")
     public Boolean delete(@PathVariable Integer id) {
-        return testService.removeById(id);
+        return patrolService.removeById(id);
     }
 
     @PostMapping("/del/batch")
     public Boolean deleteBatch(@RequestBody List<Integer> ids) {
-        return testService.removeByIds(ids);
+        return patrolService.removeByIds(ids);
     }
 
     @GetMapping
-    public List<Test> findAll() {
-        return testService.list();
+    public List<Patrol> findAll() {
+        return patrolService.list();
     }
 
     @GetMapping("/{id}")
-    public Test findOne(@PathVariable Integer id) {
-        return testService.getById(id);
+    public Patrol findOne(@PathVariable Integer id) {
+        return patrolService.getById(id);
     }
 
     @GetMapping("/page")
-    public Page<Test> findPage(@RequestParam Integer pageNum,
+    public Page<Patrol> findPage(@RequestParam Integer pageNum,
                                     @RequestParam Integer pageSize) {
-        QueryWrapper<Test> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<Patrol> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc("id");
-        return testService.page(new Page<>(pageNum, pageSize));
+        return patrolService.page(new Page<>(pageNum, pageSize));
     }
 }
 

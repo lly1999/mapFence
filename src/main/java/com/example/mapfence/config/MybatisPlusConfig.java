@@ -6,6 +6,12 @@ import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerIntercept
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+
+/**
+ * mbp分页插件
+ * by 张渝
+ * @since 2022-09-24
+ */
 @Configuration
 public class MybatisPlusConfig {
     /**

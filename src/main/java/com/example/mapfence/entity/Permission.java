@@ -14,19 +14,21 @@ import lombok.Setter;
  * </p>
  *
  * @author xavi
- * @since 2022-09-24
+ * @since 2022-09-26
  */
 @Getter
 @Setter
-@ApiModel(value = "Test对象", description = "")
-public class Test implements Serializable {
+  @ApiModel(value = "Permission对象", description = "")
+public class Permission implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+      @TableId(value = "id", type = IdType.AUTO)
+      private Integer id;
 
     private String name;
+
+    private String description;
 
 
 }
