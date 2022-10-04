@@ -3,6 +3,10 @@ package com.example.mapfence.mapper;
 import com.example.mapfence.entity.Patrol;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +19,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface PatrolMapper extends BaseMapper<Patrol> {
 
+    List<Patrol> selectByName(@Param("name") String name);
 }
