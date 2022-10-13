@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  * </p>
  *
  * @author xavi
- * @since 2022-10-05
+ * @since 2022-10-13
  */
 @Service
 public class PatrolLocationServiceImpl extends ServiceImpl<PatrolLocationMapper, PatrolLocation> implements IPatrolLocationService {

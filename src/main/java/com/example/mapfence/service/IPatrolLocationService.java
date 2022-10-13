@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author xavi
- * @since 2022-10-05
+ * @since 2022-10-13
  */
 public interface IPatrolLocationService extends IService<PatrolLocation> {
 

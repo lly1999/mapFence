@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author xavi
- * @since 2022-10-05
+ * @since 2022-10-13
  */
 @Mapper
 public interface PatrolLocationMapper extends BaseMapper<PatrolLocation> {
