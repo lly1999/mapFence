@@ -5,6 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -31,6 +35,24 @@ public class PatrolLocationController {
 
     @Resource
     private IPatrolLocationService patrolLocationService;
+
+    @ApiOperation(value = "指定巡查员id，查询其最新的坐标")
+    @GetMapping("/location/{patrol_id}")
+    public String selectLatestLocationById(@PathVariable Integer patrol_id) {
+        return patrolLocationService.selectLatestLocationById(patrol_id);
+    }
+
+    @ApiOperation(value = "指定巡查员id，查询其今日所有记录坐标")
+    @GetMapping("/locations/{patrol_id}")
+    public List<String> selectTodayLocations(@PathVariable Integer patrol_id) {
+        LocalDateTime today_start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String start = today_start.format(df);
+
+        LocalDateTime today_end = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+        String end = today_end.format(df);
+        return patrolLocationService.selectTodayLocations(patrol_id, start, end);
+    }
 
     // 新增或者更新
     @PostMapping
