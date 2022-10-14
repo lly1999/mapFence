@@ -10,4 +10,8 @@
         SELECT location FROM patrol_location WHERE patrol_id = #{patrol_id} and record_time between #{today_start}
         and #{today_end} order by record_time
     </select>
+
+    <select id="selectLatestLocations" resultType="com.example.mapfence.entity.PatrolLocation">
+        SELECT * FROM patrol_location WHERE id IN(SELECT SUBSTRING_INDEX(GROUP_CONCAT(id ORDER BY record_time DESC),',',1) FROM patrol_location GROUP BY patrol_id ) ORDER BY record_time DESC
+    </select>
 </mapper>

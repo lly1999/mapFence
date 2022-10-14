@@ -22,4 +22,6 @@ public interface PatrolLocationMapper extends BaseMapper<PatrolLocation> {
 
     List<String> selectTodayLocations(@Param("patrol_id") Integer patrol_id, @Param("today_start") String today_start,
                                       @Param("today_end") String today_end);
+
+    List<PatrolLocation> selectLatestLocations();
 }

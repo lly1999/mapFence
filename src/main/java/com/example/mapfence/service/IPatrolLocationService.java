@@ -3,6 +3,7 @@ package com.example.mapfence.service;
 import com.example.mapfence.entity.PatrolLocation;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.swagger.models.auth.In;
+import org.omg.CORBA.PUBLIC_MEMBER;
 
 import java.util.List;
 
@@ -19,4 +20,6 @@ public interface IPatrolLocationService extends IService<PatrolLocation> {
     public String selectLatestLocationById(Integer patrol_id);
 
     public List<String> selectTodayLocations(Integer patrol_id, String today_start, String today_end);
+
+    public List<PatrolLocation> selectLatestLocations();
 }

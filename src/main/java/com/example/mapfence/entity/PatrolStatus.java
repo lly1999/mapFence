@@ -1,7 +1,10 @@
 package com.example.mapfence.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,7 +17,7 @@ import lombok.Setter;
  * </p>
  *
  * @author xavi
- * @since 2022-09-26
+ * @since 2022-10-14
  */
 @Getter
 @Setter
@@ -24,11 +27,14 @@ public class PatrolStatus implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+      @TableId(value = "id", type = IdType.AUTO)
+      private Integer id;
+
       @ApiModelProperty("巡查员ID")
-        private Integer patrolId;
+      private Integer patrolId;
 
       @ApiModelProperty("日期；联合主键")
-        private LocalDateTime date;
+      private LocalDate date;
 
       @ApiModelProperty("1当日在岗；0当日不在岗")
       private Boolean atWork;

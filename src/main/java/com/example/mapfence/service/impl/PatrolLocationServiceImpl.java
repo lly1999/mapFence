@@ -27,7 +27,13 @@ public class PatrolLocationServiceImpl extends ServiceImpl<PatrolLocationMapper,
         return patrolLocationMapper.selectLatestLocationById(patrol_id);
     }
 
+    @Override
     public List<String> selectTodayLocations(Integer patrol_id, String today_start, String today_end) {
         return patrolLocationMapper.selectTodayLocations(patrol_id, today_start, today_end);
+    }
+
+    @Override
+    public List<PatrolLocation> selectLatestLocations() {
+        return patrolLocationMapper.selectLatestLocations();
     }
 }
