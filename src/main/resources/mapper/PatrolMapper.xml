@@ -5,4 +5,8 @@
     <select id="selectByName" resultType="com.example.mapfence.entity.Patrol">
         SELECT * FROM patrol WHERE name = #{name}
     </select>
+
+    <select id="selectByTelephone" resultType="com.example.mapfence.entity.Patrol">
+        SELECT * FROM patrol WHERE telephone = #{telephone}
+    </select>
 </mapper>

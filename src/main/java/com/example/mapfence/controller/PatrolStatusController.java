@@ -34,7 +34,7 @@ public class PatrolStatusController {
     @Resource
     private IPatrolStatusService patrolStatusService;
 
-    @ApiOperation(value = "给定patrol_id和date，返回状态")
+    @ApiOperation(value = "给定patrol_id和date，返回指定巡查员某天的状态")
     @GetMapping("/status/{patrol_id}/{date}")
     public PatrolStatus selectStatusByMultiId(@PathVariable Integer patrol_id, @PathVariable String date) {
         return patrolStatusService.selectStatusByMultiId(patrol_id, date);

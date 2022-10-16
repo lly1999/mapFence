@@ -1,7 +1,6 @@
 package com.example.mapfence.controller;
 
 
-import com.example.mapfence.entity.Patrol;
 import com.example.mapfence.entity.dto.PatrolWholeInfo;
 import com.example.mapfence.service.dtoService.PatrolWholeInfoService;
 import io.swagger.annotations.Api;
@@ -23,7 +22,7 @@ import java.util.List;
  */
 @Api(tags = "巡查员的全部数据整合接口")
 @RestController
-@RequestMapping("//patrolWholeInfoController")
+@RequestMapping("//patrol-whole-info")
 public class PatrolWholeInfoController {
 
     @Resource

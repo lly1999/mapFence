@@ -15,15 +15,19 @@ import java.util.List;
  * </p>
  *
  * @author xavi
- * @since 2022-09-26
+ * @since 2022-10-16
  */
 @Service
 public class PatrolServiceImpl extends ServiceImpl<PatrolMapper, Patrol> implements IPatrolService {
-
     @Resource
     PatrolMapper patrolMapper;
 
     public List<Patrol> selectByName(String name) {
         return patrolMapper.selectByName(name);
+    }
+
+    @Override
+    public List<Patrol> selectByTelephone(String telephone) {
+        return patrolMapper.selectByTelephone(telephone);
     }
 }
