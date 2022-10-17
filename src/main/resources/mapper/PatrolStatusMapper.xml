@@ -2,4 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.mapfence.mapper.PatrolStatusMapper">
 
+    <select id="isRecordExist" resultType="java.lang.Integer">
+        SELECT count(*) FROM patrol_status WHERE patrol_id = #{patrol_id} and date = #{date}
+    </select>
+
+    <select id="selectIdByMultiId" resultType="java.lang.Integer">
+        SELECT id FROM patrol_status WHERE patrol_id = #{patrol_id} and date = #{date}
+    </select>
+
+    <select id="selectAllByDate" resultType="com.example.mapfence.entity.PatrolStatus">
+        SELECT * FROM patrol_status WHERE date = #{date}
+    </select>
+
+    <select id="selectStatusByMultiId" resultType="com.example.mapfence.entity.PatrolStatus">
+        SELECT * FROM patrol_status WHERE patrol_id = #{patrol_id} and date = #{date}
+    </select>
 </mapper>

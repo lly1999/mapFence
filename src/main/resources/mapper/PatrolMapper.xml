@@ -2,4 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.mapfence.mapper.PatrolMapper">
 
+    <select id="selectByName" resultType="com.example.mapfence.entity.Patrol">
+        SELECT * FROM patrol WHERE name = #{name}
+    </select>
+
+    <select id="selectByTelephone" resultType="com.example.mapfence.entity.Patrol">
+        SELECT * FROM patrol WHERE telephone = #{telephone}
+    </select>
 </mapper>

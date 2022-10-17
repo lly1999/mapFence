@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapfence.mapper.PatrolLocationMapper">
+
+    <select id="selectLatestLocationById" resultType="string">
+        SELECT location FROM patrol_location WHERE patrol_id = #{patrol_id} order by record_time desc limit 1
+    </select>
+
+    <select id="selectTodayLocations" resultType="string">
+        SELECT location FROM patrol_location WHERE patrol_id = #{patrol_id} and record_time between #{today_start}
+        and #{today_end} order by record_time
+    </select>
+
+    <select id="selectLatestLocations" resultType="com.example.mapfence.entity.PatrolLocation">
+        SELECT * FROM patrol_location WHERE id IN(SELECT SUBSTRING_INDEX(GROUP_CONCAT(id ORDER BY record_time DESC),',',1) FROM patrol_location GROUP BY patrol_id ) ORDER BY record_time DESC
+    </select>
+</mapper>

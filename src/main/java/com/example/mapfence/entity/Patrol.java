@@ -15,7 +15,7 @@ import lombok.Setter;
  * </p>
  *
  * @author xavi
- * @since 2022-09-26
+ * @since 2022-10-16
  */
 @Getter
 @Setter
@@ -36,6 +36,9 @@ public class Patrol implements Serializable {
 
       @ApiModelProperty("巡查员所属类别：执法人员、协管人员")
       private String identity;
+
+      @ApiModelProperty("巡查员的职务")
+      private String title;
 
       @ApiModelProperty("巡查员电话号码")
       private String telephone;

@@ -65,8 +65,8 @@ public class RoleController {
 
     @ApiOperation(value = "分页查询")
     @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "pageNum", value = "要查询第几页", dataType = "Integer", required = true),
-            @ApiImplicitParam(name = "pageSize", value = "每页有几条记录", dataType = "Integer", required = true),
+            @ApiImplicitParam(name = "pageNum", value = "要查询第几页", dataType = "int", required = true),
+            @ApiImplicitParam(name = "pageSize", value = "每页有几条记录", dataType = "int", required = true),
     })
     @GetMapping("/page")
     public Page<Role> findPage(@RequestParam Integer pageNum,
