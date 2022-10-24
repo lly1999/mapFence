@@ -15,7 +15,7 @@ import lombok.Setter;
  * </p>
  *
  * @author xavi
- * @since 2022-09-26
+ * @since 2022-10-24
  */
 @Getter
 @Setter
@@ -28,6 +28,8 @@ public class Region implements Serializable {
       private Integer id;
 
     private String name;
+
+    private String agency;
 
     private String creator;
 

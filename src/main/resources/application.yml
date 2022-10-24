@@ -7,7 +7,7 @@ spring:
 server:
   port: 9090
 
-
+#日志输出sql语句
 #mybatis-plus:
 #  configuration:
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

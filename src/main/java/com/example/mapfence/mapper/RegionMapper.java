@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author xavi
- * @since 2022-09-26
+ * @since 2022-10-24
  */
 @Mapper
 public interface RegionMapper extends BaseMapper<Region> {

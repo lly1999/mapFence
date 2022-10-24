@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author xavi
- * @since 2022-09-26
+ * @since 2022-10-24
  */
 public interface IRegionService extends IService<Region> {
 
