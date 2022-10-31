@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author xavi
  * @since 2022-10-24
  */
-@Api(tags = "增删改查与分页查询")
+@Api(tags = "围栏区域表的增删改查与分页查询")
 @RestController
 @RequestMapping("//region")
 public class RegionController {
