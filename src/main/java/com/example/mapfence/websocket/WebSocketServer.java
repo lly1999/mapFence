@@ -3,6 +3,7 @@ package com.example.mapfence.websocket;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.example.mapfence.websocket.dto.WebSocketMsg;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +21,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * websocket服务端，用于和web、app通信
- * web端的socket key为”admin“
- * web端的message格式   {toPatrolTele : xxx, message : xxx}
+ * web端的socket key为”admin电话号“
+ * web端的message格式   {target : xxx, message : xxx}
+ * app端的message格式   {target : xxx, message : xxx}
  * by 张渝
  * @since 2022-10-31
  */
@@ -33,10 +35,16 @@ public class WebSocketServer {
     private static final Logger log = LoggerFactory.getLogger(WebSocketServer.class);
 
     // 当前已注册的巡查员数量
-    private static AtomicInteger onlineCnt = new AtomicInteger(0);
+    private static AtomicInteger appOnlineCnt = new AtomicInteger(0);
 
-    // 管理socket池
-    private static ConcurrentHashMap<String, WebSocketServer> webSocketMap = new ConcurrentHashMap<>();
+    // 当前已注册的管理员数量
+    private static AtomicInteger webOnlineCnt = new AtomicInteger(0);
+
+    // 巡查员socket池
+    private static ConcurrentHashMap<String, WebSocketServer> appWebSocketMap = new ConcurrentHashMap<>();
+
+    // 管理员socket池
+    private static ConcurrentHashMap<String, WebSocketServer> webWebSocketMap = new ConcurrentHashMap<>();
 
     // 当前连接的Session
     private Session session;
@@ -44,24 +52,35 @@ public class WebSocketServer {
     // 当前客户端的电话号，作为Session的索引
     private String telephone;
 
-    // web端的message中代表通信目标的字段
-    private String toPatrolTele = "toPatrolTele";
-
     @OnOpen
     public void onOpen(Session session, @PathParam("telephone") String telephone) {
         this.session = session;
         this.telephone = telephone;
-        // 若存在则更新
-        if(webSocketMap.containsKey(telephone)) {
-            webSocketMap.remove(telephone);
-            webSocketMap.put(telephone, this);
-        }else {
-            webSocketMap.put(telephone, this);
-            addOnlineCnt();
+        // 分为管理员和巡查员
+        if(telephone.contains("admin")) {
+            // 若存在则更新
+            if(webWebSocketMap.containsKey(telephone)) {
+                webWebSocketMap.remove(telephone);
+                webWebSocketMap.put(telephone, this);
+            }else {
+                webWebSocketMap.put(telephone, this);
+                addWebOnlineCnt();
+            }
+            log.info("用户连接:" + telephone + ",当前在线巡查员人数为:" + getWebOnlineCnt());
         }
-        log.info("用户连接:" + telephone + ",当前在线人数为:" + getOnlineCnt());
+        else {
+            // 若存在则更新
+            if(appWebSocketMap.containsKey(telephone)) {
+                appWebSocketMap.remove(telephone);
+                appWebSocketMap.put(telephone, this);
+            }else {
+                appWebSocketMap.put(telephone, this);
+                addAppOnlineCnt();
+            }
+            log.info("用户连接:" + telephone + ",当前在线管理员人数为:" + getAppOnlineCnt());
+        }
         try{
-            sendMessage("连接成功");
+            sendMessage("服务器", "连接成功");
         } catch (IOException e) {
             log.error("用户:" + telephone + ",网络异常!!!!!!");
         }
@@ -69,33 +88,43 @@ public class WebSocketServer {
 
     @OnClose
     public void onClose() {
-        if (webSocketMap.containsKey(telephone)) {
-            webSocketMap.remove(telephone);
-            subOnlineCnt();
+        if(telephone.contains("admin")) {
+            if (webWebSocketMap.containsKey(telephone)) {
+                webWebSocketMap.remove(telephone);
+                subWebOnlineCnt();
+                log.info("管理员退出:" + telephone + ",当前在线管理员人数为:" + getWebOnlineCnt());
+            }
         }
-        log.info("用户退出:" + telephone + ",当前在线人数为:" + getOnlineCnt());
+        else {
+            if (appWebSocketMap.containsKey(telephone)) {
+                appWebSocketMap.remove(telephone);
+                subAppOnlineCnt();
+                log.info("巡查员退出:" + telephone + ",当前在线巡查员人数为:" + getAppOnlineCnt());
+            }
+        }
     }
 
     @OnMessage
     public void onMessage(String message, Session session) {
-        log.info("收到来自客户端" + telephone + "的消息：" + message);
+        log.info("收到来自" + telephone + "的消息：" + message);
         if(!StringUtils.isEmpty(message)) {
             try{
-                // TODO: if收到web信息
-                if(telephone.equals("admin")){
+
+                JSONObject jsonObject = JSON.parseObject(message);
+                String target = jsonObject.getString("target");
+                // if收到web信息
+                if(telephone.contains("admin")){
                     // 解析message查询目标客户端
-                    JSONObject jsonObject = JSON.parseObject(message);
-                    String toPatrolTele = jsonObject.getString(this.toPatrolTele);
                     // 向目标客户端发送信息
-                    if(!StringUtils.isEmpty(toPatrolTele) && webSocketMap.containsKey(toPatrolTele)) {
-                        webSocketMap.get(toPatrolTele).sendMessage(jsonObject.getString("message"));
+                    if(!StringUtils.isEmpty(target) && appWebSocketMap.containsKey(target)) {
+                        appWebSocketMap.get(target).sendMessage(telephone, jsonObject.getString("message"));
                     }else {
                         log.error("请求的客户端为空或该客户端不在线");
                     }
-                    // TODO: if收到app信息
+                    // if收到app信息
                 }else {
-                    if(webSocketMap.containsKey("admin")) {
-                        webSocketMap.get("admin").sendMessage(message);
+                    if(!StringUtils.isEmpty(target) && webWebSocketMap.containsKey(target)) {
+                        webWebSocketMap.get(target).sendMessage(telephone, jsonObject.getString("message"));
                     }else {
                         log.error("Web端不在线，无法通信");
                     }
@@ -106,19 +135,35 @@ public class WebSocketServer {
         }
     }
 
-    public void sendMessage(String message) throws IOException {
-        this.session.getBasicRemote().sendText(message);
+    public void sendMessage(String target, String message) throws IOException {
+        WebSocketMsg webSocketMsg = new WebSocketMsg();
+        webSocketMsg.setTarget(target);
+        webSocketMsg.setMessage(message);
+        String jsonMsg = JSONObject.toJSONString(webSocketMsg);
+        this.session.getBasicRemote().sendText(jsonMsg);
     }
 
-    public static synchronized AtomicInteger getOnlineCnt() {
-        return onlineCnt;
+    public static synchronized AtomicInteger getAppOnlineCnt() {
+        return appOnlineCnt;
     }
 
-    private static synchronized void addOnlineCnt() {
-        WebSocketServer.onlineCnt.getAndIncrement();
+    public static synchronized AtomicInteger getWebOnlineCnt() {
+        return webOnlineCnt;
     }
 
-    private static synchronized void subOnlineCnt() {
-        WebSocketServer.onlineCnt.getAndDecrement();
+    private static synchronized void addAppOnlineCnt() {
+        WebSocketServer.appOnlineCnt.getAndIncrement();
+    }
+
+    private static synchronized void addWebOnlineCnt() {
+        WebSocketServer.webOnlineCnt.getAndIncrement();
+    }
+
+    private static synchronized void subAppOnlineCnt() {
+        WebSocketServer.appOnlineCnt.getAndDecrement();
+    }
+
+    private static synchronized void subWebOnlineCnt() {
+        WebSocketServer.webOnlineCnt.getAndDecrement();
     }
 }
