@@ -3,7 +3,9 @@ package com.example.mapfence.websocket;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.example.mapfence.websocket.dto.WebSocketMsg;
+import com.example.mapfence.entity.StrandedMsg;
+import com.example.mapfence.websocket.dto.appWebSocketMsg;
+import com.example.mapfence.websocket.dto.webWebSocketMsg;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,14 +18,15 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * websocket服务端，用于和web、app通信
  * web端的socket key为”admin电话号“
- * web端的message格式   {target : xxx, message : xxx}
- * app端的message格式   {target : xxx, message : xxx}
+ * web端的message格式   {patrolTelephone : xxx, message : xxx}
+ * app端的message格式   {adminTelephone : xxx, message : xxx}
  * by 张渝
  * @since 2022-10-31
  */
@@ -53,7 +56,7 @@ public class WebSocketServer {
     private String telephone;
 
     @OnOpen
-    public void onOpen(Session session, @PathParam("telephone") String telephone) {
+    public void onOpen(Session session, @PathParam("telephone") String telephone) throws IOException {
         this.session = session;
         this.telephone = telephone;
         // 分为管理员和巡查员
@@ -65,8 +68,20 @@ public class WebSocketServer {
             }else {
                 webWebSocketMap.put(telephone, this);
                 addWebOnlineCnt();
+
+                // 管理员上线后检查是否有滞留消息
+                Integer cnt = StrandedFuncs.haveStrandedMsgs(telephone);
+                if(cnt > 0) {
+                    // 获取并发送滞留信息
+                    List<StrandedMsg> msgs = StrandedFuncs.getStrandedMsgs(telephone);
+                    sendStrandedMessagesToWeb(msgs);
+                    // 删除滞留信息
+                    StrandedFuncs.deleteStrandedMsgs(telephone);
+                    log.info("管理员重新上线:" + telephone + ",当前在线管理员人数为:" + getWebOnlineCnt());
+                    log.info("发送给管理员:" + telephone + "的滞留消息数为：" + cnt);
+                }
             }
-            log.info("用户连接:" + telephone + ",当前在线巡查员人数为:" + getWebOnlineCnt());
+            log.info("管理员上线:" + telephone + ",当前在线管理员人数为:" + getWebOnlineCnt());
         }
         else {
             // 若存在则更新
@@ -77,12 +92,7 @@ public class WebSocketServer {
                 appWebSocketMap.put(telephone, this);
                 addAppOnlineCnt();
             }
-            log.info("用户连接:" + telephone + ",当前在线管理员人数为:" + getAppOnlineCnt());
-        }
-        try{
-            sendMessage("服务器", "连接成功");
-        } catch (IOException e) {
-            log.error("用户:" + telephone + ",网络异常!!!!!!");
+            log.info("巡查员上线:" + telephone + ",当前在线巡查员人数为:" + getAppOnlineCnt());
         }
     }
 
@@ -111,22 +121,26 @@ public class WebSocketServer {
             try{
 
                 JSONObject jsonObject = JSON.parseObject(message);
-                String target = jsonObject.getString("target");
                 // if收到web信息
                 if(telephone.contains("admin")){
                     // 解析message查询目标客户端
+                    String patrolTelephone = jsonObject.getString("patrolTelephone");
                     // 向目标客户端发送信息
-                    if(!StringUtils.isEmpty(target) && appWebSocketMap.containsKey(target)) {
-                        appWebSocketMap.get(target).sendMessage(telephone, jsonObject.getString("message"));
+                    if(!StringUtils.isEmpty(patrolTelephone) && appWebSocketMap.containsKey(patrolTelephone)) {
+                        appWebSocketMap.get(patrolTelephone).sendMessageToApp(telephone, jsonObject.getString("message"));
                     }else {
                         log.error("请求的客户端为空或该客户端不在线");
                     }
                     // if收到app信息
                 }else {
-                    if(!StringUtils.isEmpty(target) && webWebSocketMap.containsKey(target)) {
-                        webWebSocketMap.get(target).sendMessage(telephone, jsonObject.getString("message"));
+                    String adminTelephone = jsonObject.getString("adminTelephone");
+                    if(!StringUtils.isEmpty(adminTelephone) && webWebSocketMap.containsKey(adminTelephone)) {
+                        webWebSocketMap.get(adminTelephone).sendMessageToWeb(telephone, jsonObject.getString("message"));
                     }else {
-                        log.error("Web端不在线，无法通信");
+                        // web端离线的情况，将滞留的消息保存到数据库
+                        String msg = jsonObject.getString("message");
+                        StrandedFuncs.saveStrandedMsg(telephone, adminTelephone, msg);
+                        log.error("Web端不在线，将滞留消息保存到数据库");
                     }
                 }
             } catch (IOException e) {
@@ -135,9 +149,22 @@ public class WebSocketServer {
         }
     }
 
-    public void sendMessage(String target, String message) throws IOException {
-        WebSocketMsg webSocketMsg = new WebSocketMsg();
-        webSocketMsg.setTarget(target);
+    public void sendMessageToWeb(String patrolTelephone, String message) throws IOException {
+        webWebSocketMsg webSocketMsg = new webWebSocketMsg();
+        webSocketMsg.setPatrolTelephone(patrolTelephone);
+        webSocketMsg.setMessage(message);
+        String jsonMsg = JSONObject.toJSONString(webSocketMsg);
+        this.session.getBasicRemote().sendText(jsonMsg);
+    }
+
+    public void sendStrandedMessagesToWeb(List<StrandedMsg> msgs) throws IOException {
+        String jsonMsg = JSONObject.toJSONString(msgs);
+        this.session.getBasicRemote().sendText(jsonMsg);
+    }
+
+    public void sendMessageToApp(String adminTelephone, String message) throws IOException {
+        appWebSocketMsg webSocketMsg = new appWebSocketMsg();
+        webSocketMsg.setAdminTelephone(adminTelephone);
         webSocketMsg.setMessage(message);
         String jsonMsg = JSONObject.toJSONString(webSocketMsg);
         this.session.getBasicRemote().sendText(jsonMsg);
