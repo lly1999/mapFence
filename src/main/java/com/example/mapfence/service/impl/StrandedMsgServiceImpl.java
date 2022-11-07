@@ -54,6 +54,7 @@ public class StrandedMsgServiceImpl extends ServiceImpl<StrandedMsgMapper, Stran
     public Integer deleteStrandedMsgs(String adminTelephone) {
         QueryWrapper<StrandedMsg> wrapper = new QueryWrapper<>();
         wrapper.eq("admin_telephone", adminTelephone);
+        wrapper.eq("is_read", true);
         wrapper.notLike("sender", "admin");
         return strandedMsgMapper.delete(wrapper);
     }

@@ -38,6 +38,12 @@ public class StrandedMsgController {
         return strandedMsgService.updateReadStatus(id);
     }
 
+    @ApiOperation(value = "删除指定管理员的所有已读消息")
+    @DeleteMapping("/delete/{adminTelephone}")
+    public Integer deleteStrandedMsgs(@PathVariable String adminTelephone) {
+        return strandedMsgService.deleteStrandedMsgs(adminTelephone);
+    }
+
     // 新增或者更新
     @PostMapping
     @ApiOperation(value = "新增一条记录，若ID重复则更新")
