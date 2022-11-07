@@ -74,9 +74,9 @@ public class WebSocketServer {
                 if(cnt > 0) {
                     // 获取并发送滞留信息
                     List<StrandedMsg> msgs = StrandedFuncs.getStrandedMsgs(telephone);
-                    sendStrandedMessagesToWeb(msgs);
-                    // 删除滞留信息
-                    StrandedFuncs.deleteStrandedMsgs(telephone);
+                    sendMessage(msgs);
+                    // 将滞留信息置为已读状态
+                    StrandedFuncs.setMsgsRead(msgs);
                     log.info("管理员重新上线:" + telephone + ",当前在线管理员人数为:" + getWebOnlineCnt());
                     log.info("发送给管理员:" + telephone + "的滞留消息数为：" + cnt);
                 }
@@ -127,7 +127,9 @@ public class WebSocketServer {
                     String patrolTelephone = jsonObject.getString("patrolTelephone");
                     // 向目标客户端发送信息
                     if(!StringUtils.isEmpty(patrolTelephone) && appWebSocketMap.containsKey(patrolTelephone)) {
-                        appWebSocketMap.get(patrolTelephone).sendMessageToApp(telephone, jsonObject.getString("message"));
+                        String real_msg = jsonObject.getString("message");
+                        // 保存消息到数据库并发送给目标
+                        appWebSocketMap.get(patrolTelephone).saveAndSendMessage(patrolTelephone, telephone, real_msg, telephone);
                     }else {
                         log.error("请求的客户端为空或该客户端不在线");
                     }
@@ -135,11 +137,13 @@ public class WebSocketServer {
                 }else {
                     String adminTelephone = jsonObject.getString("adminTelephone");
                     if(!StringUtils.isEmpty(adminTelephone) && webWebSocketMap.containsKey(adminTelephone)) {
-                        webWebSocketMap.get(adminTelephone).sendMessageToWeb(telephone, jsonObject.getString("message"));
+                        String real_msg = jsonObject.getString("message");
+                        // 保存消息到数据库并发送给目标
+                        webWebSocketMap.get(adminTelephone).saveAndSendMessage(telephone, adminTelephone, real_msg, telephone);
                     }else {
                         // web端离线的情况，将滞留的消息保存到数据库
                         String msg = jsonObject.getString("message");
-                        StrandedFuncs.saveStrandedMsg(telephone, adminTelephone, msg);
+                        StrandedFuncs.saveStrandedMsg(telephone, adminTelephone, msg, telephone);
                         log.error("Web端不在线，将滞留消息保存到数据库");
                     }
                 }
@@ -149,26 +153,41 @@ public class WebSocketServer {
         }
     }
 
-    public void sendMessageToWeb(String patrolTelephone, String message) throws IOException {
-        webWebSocketMsg webSocketMsg = new webWebSocketMsg();
-        webSocketMsg.setPatrolTelephone(patrolTelephone);
-        webSocketMsg.setMessage(message);
-        String jsonMsg = JSONObject.toJSONString(webSocketMsg);
-        this.session.getBasicRemote().sendText(jsonMsg);
-    }
-
-    public void sendStrandedMessagesToWeb(List<StrandedMsg> msgs) throws IOException {
+    public void sendMessage(List<StrandedMsg> msgs) throws IOException {
         String jsonMsg = JSONObject.toJSONString(msgs);
         this.session.getBasicRemote().sendText(jsonMsg);
     }
 
-    public void sendMessageToApp(String adminTelephone, String message) throws IOException {
-        appWebSocketMsg webSocketMsg = new appWebSocketMsg();
-        webSocketMsg.setAdminTelephone(adminTelephone);
-        webSocketMsg.setMessage(message);
-        String jsonMsg = JSONObject.toJSONString(webSocketMsg);
+    public void saveAndSendMessage(String patrolTelephone, String adminTelephone, String real_msg, String sender) throws IOException {
+        // 将消息存进数据库
+        StrandedFuncs.saveStrandedMsg(patrolTelephone, adminTelephone, real_msg, sender);
+        StrandedMsg msg = StrandedFuncs.getOneMsg(adminTelephone, patrolTelephone, sender).get(0);
+//        // 将消息置为已读，决定权通过http接口留给前端管理员
+//        StrandedFuncs.setMsgRead(msg);
+        String jsonMsg = JSONObject.toJSONString(msg);
         this.session.getBasicRemote().sendText(jsonMsg);
     }
+
+//    public void sendMessageToWeb(String patrolTelephone, String message) throws IOException {
+//        webWebSocketMsg webSocketMsg = new webWebSocketMsg();
+//        webSocketMsg.setPatrolTelephone(patrolTelephone);
+//        webSocketMsg.setMessage(message);
+//        String jsonMsg = JSONObject.toJSONString(webSocketMsg);
+//        this.session.getBasicRemote().sendText(jsonMsg);
+//    }
+//
+//    public void sendStrandedMessagesToWeb(List<StrandedMsg> msgs) throws IOException {
+//        String jsonMsg = JSONObject.toJSONString(msgs);
+//        this.session.getBasicRemote().sendText(jsonMsg);
+//    }
+//
+//    public void sendMessageToApp(String adminTelephone, String message) throws IOException {
+//        appWebSocketMsg webSocketMsg = new appWebSocketMsg();
+//        webSocketMsg.setAdminTelephone(adminTelephone);
+//        webSocketMsg.setMessage(message);
+//        String jsonMsg = JSONObject.toJSONString(webSocketMsg);
+//        this.session.getBasicRemote().sendText(jsonMsg);
+//    }
 
     public static synchronized AtomicInteger getAppOnlineCnt() {
         return appOnlineCnt;

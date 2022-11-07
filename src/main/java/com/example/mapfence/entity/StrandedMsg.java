@@ -16,7 +16,7 @@ import lombok.Setter;
  * </p>
  *
  * @author xavi
- * @since 2022-11-03
+ * @since 2022-11-07
  */
 @Getter
 @Setter
@@ -40,6 +40,12 @@ public class StrandedMsg implements Serializable {
 
       @ApiModelProperty("消息发送时间")
       private LocalDateTime createTime;
+
+      @ApiModelProperty("0未读1已读")
+      private Boolean isRead;
+
+      @ApiModelProperty("消息发送者")
+      private String sender;
 
 
 }

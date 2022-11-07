@@ -11,10 +11,14 @@ import java.util.List;
  * </p>
  *
  * @author xavi
- * @since 2022-11-02
+ * @since 2022-11-07
  */
 public interface IStrandedMsgService extends IService<StrandedMsg> {
     List<StrandedMsg> getStrandedMsgs(String adminTelephone);
 
+    List<StrandedMsg> getOneMsg(String adminTelephone, String patrolTelephone, String sender);
+
     Integer deleteStrandedMsgs(String adminTelephone);
+
+    Integer updateReadStatus(Integer id);
 }

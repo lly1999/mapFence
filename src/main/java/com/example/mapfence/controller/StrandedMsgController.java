@@ -22,15 +22,21 @@ import org.springframework.web.bind.annotation.RestController;
  * </p>
  *
  * @author xavi
- * @since 2022-11-03
+ * @since 2022-11-07
  */
-@Api(tags = "增删改查与分页查询")
+@Api(tags = "滞留消息的增删改查与分页查询")
 @RestController
 @RequestMapping("//stranded-msg")
 public class StrandedMsgController {
 
     @Resource
     private IStrandedMsgService strandedMsgService;
+
+    @ApiOperation(value = "将某一条消息置为已读")
+    @GetMapping("/update_read/{id}")
+    public Integer updateReadStatus(@PathVariable Integer id) {
+        return strandedMsgService.updateReadStatus(id);
+    }
 
     // 新增或者更新
     @PostMapping
