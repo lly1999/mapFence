@@ -76,7 +76,7 @@ public class WebSocketServer {
                     List<StrandedMsg> msgs = StrandedFuncs.getStrandedMsgs(telephone);
                     sendMessage(msgs);
                     // 将滞留信息置为已读状态
-                    StrandedFuncs.setMsgsRead(msgs);
+//                    StrandedFuncs.setMsgsRead(msgs);
                     log.info("管理员重新上线:" + telephone + ",当前在线管理员人数为:" + getWebOnlineCnt());
                     log.info("发送给管理员:" + telephone + "的滞留消息数为：" + cnt);
                 }
