@@ -35,5 +35,6 @@ public class BikeLocation implements Serializable {
       @ApiModelProperty("记录时间")
       private LocalDateTime recordTime;
 
-
+      @ApiModelProperty("单车管理员所属公司")
+      private String company;
 }

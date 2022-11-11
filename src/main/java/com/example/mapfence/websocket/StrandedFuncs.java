@@ -8,6 +8,7 @@ import com.example.mapfence.service.impl.PatrolServiceImpl;
 import com.example.mapfence.service.impl.StrandedMsgServiceImpl;
 import com.example.mapfence.utils.SpringContextUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,6 +24,26 @@ import java.util.List;
 public class StrandedFuncs {
 
     private static final IStrandedMsgService strandedMsgService = SpringContextUtils.getBean(StrandedMsgServiceImpl.class);
+
+    private static final IPatrolService patrolService = SpringContextUtils.getBean(PatrolServiceImpl.class);
+
+    // 根据巡查员类别和巡查员所在区域获取巡查员的电话号
+    public static List<String> selectTelephoneByRegionAndIdentity(String identity, List<Integer> regions) {
+        List<String> telephones = new ArrayList<>();
+        List<Patrol> patrols = new ArrayList<>();
+        if(regions.size() > 0) {
+            for(Integer region : regions) {
+                patrols.addAll(patrolService.selectTelephoneByRegionAndIdentity(identity, region));
+            }
+        }
+        else {
+            patrols.addAll(patrolService.selectTelephoneByRegionAndIdentity(identity, null));
+        }
+        for(Patrol patrol : patrols){
+            telephones.add(patrol.getTelephone());
+        }
+        return telephones;
+    }
 
     // 新增单条记录
     public static void saveStrandedMsg(String patrolTelephone, String adminTelephone, String message, String sender) {

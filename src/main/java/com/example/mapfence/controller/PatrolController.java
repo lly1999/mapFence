@@ -32,6 +32,12 @@ public class PatrolController {
     @Resource
     private IPatrolService patrolService;
 
+    @GetMapping("/test/{region}/{identity}")
+    @ApiOperation(value = "测试")
+    public List<Patrol> selectTelephoneByRegion(@PathVariable Integer region, String identity) {
+        return patrolService.selectTelephoneByRegionAndIdentity(identity, region);
+    }
+
     // 新增或者更新
     @PostMapping
     @ApiOperation(value = "新增一条记录，若ID重复则更新")

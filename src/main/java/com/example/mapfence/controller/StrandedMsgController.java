@@ -24,13 +24,19 @@ import org.springframework.web.bind.annotation.RestController;
  * @author xavi
  * @since 2022-11-07
  */
-@Api(tags = "滞留消息的增删改查与分页查询")
+@Api(tags = "websocket消息的增删改查与分页查询")
 @RestController
 @RequestMapping("//stranded-msg")
 public class StrandedMsgController {
 
     @Resource
     private IStrandedMsgService strandedMsgService;
+
+    @ApiOperation(value = "获取指定管理员的所有未读消息")
+    @GetMapping("/get_stranded/{adminTelephone}")
+    public List<StrandedMsg> getStrandedMsgs(@PathVariable String adminTelephone) {
+        return strandedMsgService.getStrandedMsgs(adminTelephone);
+    }
 
     @ApiOperation(value = "将某一条消息置为已读")
     @GetMapping("/update_read/{id}")
