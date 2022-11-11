@@ -120,7 +120,6 @@ public class WebSocketServer {
         log.info("收到来自" + telephone + "的消息：" + message);
         if(!StringUtils.isEmpty(message)) {
             try{
-
                 JSONObject jsonObject = JSON.parseObject(message);
                 String real_msg = jsonObject.getString("message");
                 // if收到web信息
@@ -132,11 +131,7 @@ public class WebSocketServer {
                         List<String> telephones = StrandedFuncs.selectTelephoneByRegionAndIdentity(identity, regions);
                         if(!telephones.isEmpty()) {
                             for(String patrolTelephone :telephones) {
-                                if(appWebSocketMap.containsKey(patrolTelephone)){
-                                    appWebSocketMap.get(patrolTelephone).saveAndSendMessage(patrolTelephone, telephone, real_msg, telephone);
-                                } else {
-                                    log.error("请求的客户端为空或该客户端不在线");
-                                }
+                                saveAndSend(patrolTelephone, telephone, real_msg, telephone);
                             }
                         }
                     }
@@ -145,25 +140,12 @@ public class WebSocketServer {
                         // 解析message查询目标客户端
                         String patrolTelephone = jsonObject.getString("patrolTelephone");
                         // 向目标客户端发送信息
-                        if(!StringUtils.isEmpty(patrolTelephone) && appWebSocketMap.containsKey(patrolTelephone)) {
-                            // 保存消息到数据库并发送给目标
-                            appWebSocketMap.get(patrolTelephone).saveAndSendMessage(patrolTelephone, telephone, real_msg, telephone);
-                        }else {
-                            log.error("请求的客户端为空或该客户端不在线");
-                        }
+                        saveAndSend(patrolTelephone, telephone, real_msg, telephone);
                     }
                     // if收到app信息
                 }else {
                     String adminTelephone = jsonObject.getString("adminTelephone");
-                    if(!StringUtils.isEmpty(adminTelephone) && webWebSocketMap.containsKey(adminTelephone)) {
-                        // 保存消息到数据库并发送给目标
-                        webWebSocketMap.get(adminTelephone).saveAndSendMessage(telephone, adminTelephone, real_msg, telephone);
-                    }else {
-                        // web端离线的情况，将滞留的消息保存到数据库
-                        String msg = jsonObject.getString("message");
-                        StrandedFuncs.saveStrandedMsg(telephone, adminTelephone, msg, telephone);
-                        log.error("Web端不在线，将滞留消息保存到数据库");
-                    }
+                    saveAndSend(telephone, adminTelephone, real_msg, telephone);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -174,6 +156,27 @@ public class WebSocketServer {
     public void sendMessage(List<StrandedMsg> msgs) throws IOException {
         String jsonMsg = JSONObject.toJSONString(msgs);
         this.session.getBasicRemote().sendText(jsonMsg);
+    }
+
+    private void saveAndSend(String patrolTelephone, String adminTelephone, String real_msg, String sender) throws IOException {
+        if(sender.contains("admin")) {
+            if(!StringUtils.isEmpty(patrolTelephone) && appWebSocketMap.containsKey(patrolTelephone)) {
+                // 保存消息到数据库并发送给目标
+                appWebSocketMap.get(patrolTelephone).saveAndSendMessage(patrolTelephone, adminTelephone, real_msg, adminTelephone);
+            }else {
+                log.error("请求的客户端为空或该客户端不在线");
+            }
+        }
+        else {
+            if(!StringUtils.isEmpty(adminTelephone) && webWebSocketMap.containsKey(adminTelephone)) {
+                // 保存消息到数据库并发送给目标
+                webWebSocketMap.get(adminTelephone).saveAndSendMessage(patrolTelephone, adminTelephone, real_msg, patrolTelephone);
+            }else {
+                // web端离线的情况，将滞留的消息保存到数据库
+                StrandedFuncs.saveStrandedMsg(patrolTelephone, adminTelephone, real_msg, patrolTelephone);
+                log.error("Web端不在线，将滞留消息保存到数据库");
+            }
+        }
     }
 
     public void saveAndSendMessage(String patrolTelephone, String adminTelephone, String real_msg, String sender) throws IOException {
