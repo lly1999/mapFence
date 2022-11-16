@@ -3,13 +3,13 @@ package com.example.mapfence.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.web.bind.annotation.*;
+import javax.annotation.Resource;
+import java.util.List;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.*;
-import javax.annotation.Resource;
-import java.util.List;
 
 import com.example.mapfence.service.IRegionService;
 import com.example.mapfence.entity.Region;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  * </p>
  *
  * @author xavi
- * @since 2022-09-26
+ * @since 2022-10-24
  */
 @Api(tags = "围栏区域表的增删改查与分页查询")
 @RestController
@@ -33,8 +33,8 @@ public class RegionController {
     private IRegionService regionService;
 
     // 新增或者更新
-    @ApiOperation(value = "新增一条记录，若ID重复则更新")
     @PostMapping
+    @ApiOperation(value = "新增一条记录，若ID重复则更新")
     public Boolean save(@RequestBody Region region) {
         return regionService.saveOrUpdate(region);
     }

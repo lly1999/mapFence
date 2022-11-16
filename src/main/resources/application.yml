@@ -7,7 +7,15 @@ spring:
 server:
   port: 9090
 
-
+#日志输出sql语句
 #mybatis-plus:
 #  configuration:
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 自定义jwt key
+jwt:
+  tokenHeader: Authorization #JWT存储的请求头
+  #JWT加解密使用的密钥
+  secret: cubdncudbvkocjzocdsopsccnjxcnjdaeoqmxqlkxascicnzjcievmxnvdoaskxnnv
+  expiration: 604800 #JWT的超期限时间(60*60*24)
+  tokenHead: Bearer  #JWT负载中拿到开头

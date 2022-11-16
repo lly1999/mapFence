@@ -1,6 +1,6 @@
 package com.example.mapfence.mapper;
 
-import com.example.mapfence.entity.Region;
+import com.example.mapfence.entity.Bike;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -10,9 +10,9 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author xavi
- * @since 2022-10-24
+ * @since 2022-11-08
  */
 @Mapper
-public interface RegionMapper extends BaseMapper<Region> {
+public interface BikeMapper extends BaseMapper<Bike> {
 
 }

@@ -14,6 +14,8 @@ import java.util.List;
  * @since 2022-10-16
  */
 public interface IPatrolService extends IService<Patrol> {
+    public List<Patrol> selectTelephoneByRegionAndIdentity(String identity, Integer region);
+
     public List<Patrol> selectByName(String name);
 
     public List<Patrol> selectByTelephone(String telephone);

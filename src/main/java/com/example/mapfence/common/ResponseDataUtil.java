@@ -58,4 +58,20 @@ public class ResponseDataUtil {
     public static <T> ResponseData<T> Error(ResultEnum resultEnum) {
         return new ResponseData<T>(resultEnum);
     }
+
+    public static <T> ResponseData<T> Forbidden(T data) {
+        return new ResponseData<T>(ResultEnum.FORBIDDEN, data);
+    }
+
+    public static <T> ResponseData<T> Unauthorized(T data) {
+        return new ResponseData<T>(ResultEnum.UNAUTHORIZED, data);
+    }
+
+    public static <T> ResponseData<T> ValidateFailed() {
+        return new ResponseData<T>(ResultEnum.VALIDATE_FAILED);
+    }
+
+    public static <T> ResponseData<T> ValidateFailed(String msg) {
+        return new ResponseData<T>(ResultEnum.VALIDATE_FAILED.getCode(), msg);
+    }
 }

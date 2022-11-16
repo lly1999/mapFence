@@ -1,6 +1,6 @@
 package com.example.mapfence.service;
 
-import com.example.mapfence.entity.Region;
+import com.example.mapfence.entity.Bike;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author xavi
- * @since 2022-10-24
+ * @since 2022-11-08
  */
-public interface IRegionService extends IService<Region> {
+public interface IBikeService extends IService<Bike> {
 
 }
