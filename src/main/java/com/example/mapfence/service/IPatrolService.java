@@ -19,4 +19,6 @@ public interface IPatrolService extends IService<Patrol> {
     public List<Patrol> selectByName(String name);
 
     public List<Patrol> selectByTelephone(String telephone);
+
+    public List<Patrol> selectByConditions(Integer regionId, String department, String identity);
 }

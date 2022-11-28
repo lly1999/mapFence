@@ -50,10 +50,10 @@ public class PatrolWholeInfo implements Serializable {
     @ApiModelProperty("1当日在岗；0当日不在岗")
     private Boolean atWork;
 
-    @ApiModelProperty("1今日休假；0今日不休假")
+    @ApiModelProperty("1当日休假；0当日不休假")
     private Boolean vacation;
 
-    @ApiModelProperty("1今日补休；0今日不补休")
+    @ApiModelProperty("1当日补休；0当日不补休")
     private Boolean vacationDefer;
 
     @ApiModelProperty("上班时间")

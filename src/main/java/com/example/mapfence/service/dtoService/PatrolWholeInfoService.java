@@ -4,10 +4,12 @@ package com.example.mapfence.service.dtoService;
 import com.example.mapfence.entity.Patrol;
 import com.example.mapfence.entity.PatrolLocation;
 import com.example.mapfence.entity.PatrolStatus;
+import com.example.mapfence.entity.Region;
 import com.example.mapfence.entity.dto.PatrolWholeInfo;
 import com.example.mapfence.service.impl.PatrolLocationServiceImpl;
 import com.example.mapfence.service.impl.PatrolServiceImpl;
 import com.example.mapfence.service.impl.PatrolStatusServiceImpl;
+import com.example.mapfence.service.impl.RegionServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -35,7 +37,23 @@ public class PatrolWholeInfoService {
     PatrolStatusServiceImpl patrolStatusService;
     @Resource
     PatrolLocationServiceImpl patrolLocationService;
+    @Resource
+    RegionServiceImpl regionService;
 
+//    public List<PatrolWholeInfo> selectByConditions(String date, Boolean arWork,
+//                                                    Boolean vacation, Boolean vacationDefer, String agency,
+//                                                    String department, String identity) {
+//        // 将街道转换为regionId
+//        List<Region> regions = regionService.selectByAgency(agency);
+//        // 将regionId,department,identity转换为patrolId
+//        List<Patrol> patrols = new ArrayList<>();
+//        for(Region region : regions) {
+//            patrols.addAll(patrolService.selectByConditions(region.getId(), department, identity));
+//        }
+//    }
+
+
+    // 获取所有巡查员今日的状态
     public List<PatrolWholeInfo> findAll() {
         // patrol_id - PatrolWholeInfo
         Map<Integer, PatrolWholeInfo> map = new HashMap<>();

@@ -41,86 +41,14 @@ public class PatrolStatusController {
     @Resource
     private IPatrolStatusService patrolStatusService;
 
-    @ApiOperation(value = "app端接口：上班打卡功能；提供巡查员电话号，生成其当日状态记录")
+    @ApiOperation(value = "app端接口：设置巡查员当日状态")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "patrolTelephone", value = "该巡查员的登录电话号", dataType = "String", required = true),
+            @ApiImplicitParam(name = "status", value = "0上班在岗，1下班打卡，2轮休，3请假", dataType = "int", required = true),
     })
-    @PostMapping("/status/clock_in/{patrolTelephone}")
-    public void clockIn(@PathVariable String patrolTelephone) {
-        Integer patrolId = patrolStatusService.telephone2PatrolId(patrolTelephone);
-        // 当前日期和时间
-        LocalDate date = LocalDate.now();
-        LocalDateTime time = LocalDateTime.now();
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String dateString = date.format(dateFormatter);
-
-        // 若当天已有记录（在岗/休假）则不会新增记录
-        if(!patrolStatusService.selectByPatrolIdAndDate(patrolId, dateString).isEmpty()) {
-            log.error("该巡查员当天已有记录，无法再打卡");
-        }
-        else {
-            // 插入记录
-            PatrolStatus patrolStatus = new PatrolStatus();
-            patrolStatus.setPatrolId(patrolId);
-            patrolStatus.setAtWork(true);
-            patrolStatus.setDate(date);
-            patrolStatus.setOnWork(time);
-
-            patrolStatusService.saveOrUpdate(patrolStatus);
-            log.info("巡查员：" + patrolTelephone + "上班打卡成功");
-        }
-    }
-
-    @ApiOperation(value = "app端接口：下班打卡功能；提供巡查员电话号，在状态记录中更新下班时间")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "patrolTelephone", value = "该巡查员的登录电话号", dataType = "String", required = true),
-    })
-    @PostMapping("/status/clock_out/{patrolTelephone}")
-    public void clockOut(@PathVariable String patrolTelephone) {
-        Integer patrolId = patrolStatusService.telephone2PatrolId(patrolTelephone);
-        // 当前日期和时间
-        LocalDate date = LocalDate.now();
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String dateString = date.format(dateFormatter);
-        LocalDateTime time = LocalDateTime.now();
-
-        // 数据库操作
-        PatrolStatus patrolStatus = patrolStatusService.selectByPatrolIdAndDate(patrolId, dateString).get(0);
-        patrolStatus.setOffWork(time);
-        patrolStatusService.saveOrUpdate(patrolStatus);
-        log.info("巡查员：" + patrolTelephone + "下班打卡成功");
-    }
-
-    @ApiOperation(value = "web端接口：设置当日为休假/补休状态；在状态记录中更新休假状态")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "patrolTelephone", value = "该巡查员的登录电话号", dataType = "String", required = true),
-            @ApiImplicitParam(name = "date", value = "补休日期", dataType = "String", required = true),
-            @ApiImplicitParam(name = "choice", value = "休假/补休", dataType = "String", required = true),
-    })
-    @PostMapping("/status/vacation/{patrolTelephone}/{date}/{choice}")
-    public void setVacation(@PathVariable String patrolTelephone, @PathVariable String date, @PathVariable String choice) {
-        Integer patrolId = patrolStatusService.telephone2PatrolId(patrolTelephone);
-        // 查询是否已经有当日记录并且状态为上班，如果是则日志记录
-//        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate _date = LocalDate.parse(date);
-        // 指定巡查员的指定日期记录存在，并且at_work为true
-        List<PatrolStatus> patrolStatuses = patrolStatusService.selectByPatrolIdAndDate(patrolId, date);
-        if((!patrolStatuses.isEmpty()) && patrolStatuses.get(0).getAtWork()) {
-            log.error("该巡查员当天在岗！");
-        }
-        // 如果当天没有在岗，则将当天设为休假状态
-        else {
-            PatrolStatus patrolStatus = new PatrolStatus();
-            patrolStatus.setPatrolId(patrolId);
-            patrolStatus.setDate(_date);
-            if(choice.equals("休假"))
-                patrolStatus.setVacation(true);
-            else if(choice.equals("补休"))
-                patrolStatus.setVacationDefer(true);
-
-            patrolStatusService.saveOrUpdate(patrolStatus);
-            log.info("巡查员:" + patrolTelephone + "在这一天" + date + "设为休假状态");
-        }
+    @PostMapping("/status/set_status/{patrolTelephone}/{status}/{date}")
+    public void setStatus(@PathVariable String patrolTelephone, @PathVariable Integer status, @RequestParam(required = false) String date) {
+        patrolStatusService.setStatus(patrolTelephone, status, date);
     }
 
 
