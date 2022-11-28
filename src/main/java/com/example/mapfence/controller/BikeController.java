@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author xavi
  * @since 2022-11-08
  */
-@Api(tags = "单车管理员表增删改查与分页查询")
+@Api(tags = "单车管理员表相关接口")
 @RestController
 @RequestMapping("//bike")
 public class BikeController {
@@ -34,36 +34,36 @@ public class BikeController {
 
     // 新增或者更新
     @PostMapping
-    @ApiOperation(value = "新增一条记录，若ID重复则更新")
+    @ApiOperation(value = "测试接口：新增一名单车管理员，若ID重复则更新")
     public Boolean save(@RequestBody Bike bike) {
         return bikeService.saveOrUpdate(bike);
     }
 
-    @ApiOperation(value = "删除指定ID的记录")
+    @ApiOperation(value = "测试接口：删除指定ID的单车管理员接口")
     @DeleteMapping("/{id}")
     public Boolean delete(@PathVariable Integer id) {
         return bikeService.removeById(id);
     }
 
-    @ApiOperation(value = "批量删除指定ID的记录")
-    @PostMapping("/del/batch")
-    public Boolean deleteBatch(@RequestBody List<Integer> ids) {
-        return bikeService.removeByIds(ids);
-    }
+//    @ApiOperation(value = "批量删除指定ID的记录")
+//    @PostMapping("/del/batch")
+//    public Boolean deleteBatch(@RequestBody List<Integer> ids) {
+//        return bikeService.removeByIds(ids);
+//    }
 
-    @ApiOperation(value = "查询所有记录")
+    @ApiOperation(value = "web端接口：查询所有单车管理员记录")
     @GetMapping
     public List<Bike> findAll() {
         return bikeService.list();
     }
 
-    @ApiOperation(value = "查询指定ID的记录")
+    @ApiOperation(value = "测试接口：查询指定ID的单车管理员记录")
     @GetMapping("/{id}")
     public Bike findOne(@PathVariable Integer id) {
         return bikeService.getById(id);
     }
 
-    @ApiOperation(value = "分页查询")
+    @ApiOperation(value = "web端接口：单车管理员记录的分页查询")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "pageNum", value = "要查询第几页", dataType = "int", required = true),
             @ApiImplicitParam(name = "pageSize", value = "每页有几条记录", dataType = "int", required = true),

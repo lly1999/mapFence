@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author xavi
  * @since 2022-11-08
  */
-@Api(tags = "单车管理员坐标表增删改查与分页查询")
+@Api(tags = "单车管理员坐标相关接口")
 @RestController
 @RequestMapping("//bike-location")
 public class BikeLocationController {
@@ -34,36 +34,36 @@ public class BikeLocationController {
 
     // 新增或者更新
     @PostMapping
-    @ApiOperation(value = "新增一条记录，若ID重复则更新")
+    @ApiOperation(value = "测试接口：新增一条单车管理员坐标记录，若ID重复则更新")
     public Boolean save(@RequestBody BikeLocation bikeLocation) {
         return bikeLocationService.saveOrUpdate(bikeLocation);
     }
 
-    @ApiOperation(value = "删除指定ID的记录")
+    @ApiOperation(value = "测试接口：删除指定ID的单车管理员坐标记录")
     @DeleteMapping("/{id}")
     public Boolean delete(@PathVariable Integer id) {
         return bikeLocationService.removeById(id);
     }
 
-    @ApiOperation(value = "批量删除指定ID的记录")
-    @PostMapping("/del/batch")
-    public Boolean deleteBatch(@RequestBody List<Integer> ids) {
-        return bikeLocationService.removeByIds(ids);
-    }
+//    @ApiOperation(value = "批量删除指定ID的记录")
+//    @PostMapping("/del/batch")
+//    public Boolean deleteBatch(@RequestBody List<Integer> ids) {
+//        return bikeLocationService.removeByIds(ids);
+//    }
 
-    @ApiOperation(value = "查询所有记录")
+    @ApiOperation(value = "web端接口：查询所有单车管理员坐标记录")
     @GetMapping
     public List<BikeLocation> findAll() {
         return bikeLocationService.list();
     }
 
-    @ApiOperation(value = "查询指定ID的记录")
+    @ApiOperation(value = "测试接口：查询指定ID的单车管理员坐标记录")
     @GetMapping("/{id}")
     public BikeLocation findOne(@PathVariable Integer id) {
         return bikeLocationService.getById(id);
     }
 
-    @ApiOperation(value = "分页查询")
+    @ApiOperation(value = "web端接口：单车管理员坐标记录的分页查询")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "pageNum", value = "要查询第几页", dataType = "int", required = true),
             @ApiImplicitParam(name = "pageSize", value = "每页有几条记录", dataType = "int", required = true),

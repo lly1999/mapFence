@@ -20,7 +20,7 @@ import java.util.List;
  * @author xavi
  * @since 2022-10-14
  */
-@Api(tags = "巡查员的全部数据整合接口")
+@Api(tags = "巡查员的数据整合接口，包括巡查员基本信息、巡查员最新状态、巡查员最新坐标")
 @RestController
 @RequestMapping("//patrol-whole-info")
 public class PatrolWholeInfoController {
@@ -28,7 +28,7 @@ public class PatrolWholeInfoController {
     @Resource
     PatrolWholeInfoService patrolWholeInfoService;
 
-    @ApiOperation(value = "获取所有patrol的全部最新信息")
+    @ApiOperation(value = "web端接口：获取所有巡查员的全部最新信息，包括巡查员基本信息、巡查员最新状态、巡查员最新坐标")
     @GetMapping
     public List<PatrolWholeInfo> findAll() {
         return patrolWholeInfoService.findAll();

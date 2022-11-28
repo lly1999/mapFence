@@ -53,8 +53,7 @@ public class AuthController {
         }
         String token = authService.login(username, password);
         if (token == null) {
-            tokenMap.put("error", "username or password is not correct");
-            return tokenMap;
+            return null;
         }
         tokenMap.put("token", token);
         tokenMap.put("tokenHead", tokenHead);

@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author xavi
  * @since 2022-09-26
  */
-@Api(tags = "问题记录表的增删改查与分页查询")
+@Api(tags = "问题记录表的相关接口")
 @RestController
 @RequestMapping("//problem-record")
 public class ProblemRecordController {
@@ -33,37 +33,37 @@ public class ProblemRecordController {
     private IProblemRecordService problemRecordService;
 
     // 新增或者更新
-    @ApiOperation(value = "新增一条记录，若ID重复则更新")
+    @ApiOperation(value = "测试接口：新增一条问题记录，若ID重复则更新")
     @PostMapping
     public Boolean save(@RequestBody ProblemRecord problemRecord) {
         return problemRecordService.saveOrUpdate(problemRecord);
     }
 
-    @ApiOperation(value = "删除指定ID的记录")
+    @ApiOperation(value = "测试接口：删除指定ID的问题记录")
     @DeleteMapping("/{id}")
     public Boolean delete(@PathVariable Integer id) {
         return problemRecordService.removeById(id);
     }
 
-    @ApiOperation(value = "批量删除指定ID的记录")
-    @PostMapping("/del/batch")
-    public Boolean deleteBatch(@RequestBody List<Integer> ids) {
-        return problemRecordService.removeByIds(ids);
-    }
+//    @ApiOperation(value = "批量删除指定ID的问题记录")
+//    @PostMapping("/del/batch")
+//    public Boolean deleteBatch(@RequestBody List<Integer> ids) {
+//        return problemRecordService.removeByIds(ids);
+//    }
 
-    @ApiOperation(value = "查询所有记录")
+    @ApiOperation(value = "web端接口：查询所有问题记录")
     @GetMapping
     public List<ProblemRecord> findAll() {
         return problemRecordService.list();
     }
 
-    @ApiOperation(value = "查询指定ID的记录")
+    @ApiOperation(value = "测试接口：查询指定ID的问题记录")
     @GetMapping("/{id}")
     public ProblemRecord findOne(@PathVariable Integer id) {
         return problemRecordService.getById(id);
     }
 
-    @ApiOperation(value = "分页查询")
+    @ApiOperation(value = "web端接口：问题记录的分页查询")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "pageNum", value = "要查询第几页", dataType = "int", required = true),
             @ApiImplicitParam(name = "pageSize", value = "每页有几条记录", dataType = "int", required = true),

@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author xavi
  * @since 2022-10-14
  */
-@Api(tags = "巡查员状态表的增删改查与分页查询")
+@Api(tags = "巡查员状态表的相关接口")
 @RestController
 @RequestMapping("//patrol-status")
 public class PatrolStatusController {
@@ -34,7 +34,11 @@ public class PatrolStatusController {
     @Resource
     private IPatrolStatusService patrolStatusService;
 
-    @ApiOperation(value = "给定patrol_id和date，返回指定巡查员某天的状态")
+    @ApiOperation(value = "web端接口：查询指定巡查员指定日期的状态")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "patrol_id", value = "巡查员表中的id字段", dataType = "int", required = true),
+            @ApiImplicitParam(name = "date", value = "YYYY-MM-DD", dataType = "String", required = true),
+    })
     @GetMapping("/status/{patrol_id}/{date}")
     public PatrolStatus selectStatusByMultiId(@PathVariable Integer patrol_id, @PathVariable String date) {
         return patrolStatusService.selectStatusByMultiId(patrol_id, date);
@@ -42,7 +46,10 @@ public class PatrolStatusController {
 
     // 新增或者更新
     @PostMapping
-    @ApiOperation(value = "按照patrol_id与date作为联合主键，新增或更新记录")
+    @ApiOperation(value = "web端接口：新增或更新巡查员状态")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "patrolStatus", value = "patrolStatus实体", dataType = "PatrolStatus", required = true),
+    })
     public Boolean save(@RequestBody PatrolStatus patrolStatus) {
         Integer patrol_id = patrolStatus.getPatrolId();
         // 获取date并转换为String
@@ -59,31 +66,31 @@ public class PatrolStatusController {
             return patrolStatusService.save(patrolStatus);
     }
 
-    @ApiOperation(value = "删除指定ID的记录")
+    @ApiOperation(value = "测试接口：删除指定ID的巡查员状态记录")
     @DeleteMapping("/{id}")
     public Boolean delete(@PathVariable Integer id) {
         return patrolStatusService.removeById(id);
     }
 
-    @ApiOperation(value = "批量删除指定ID的记录")
-    @PostMapping("/del/batch")
-    public Boolean deleteBatch(@RequestBody List<Integer> ids) {
-        return patrolStatusService.removeByIds(ids);
-    }
+//    @ApiOperation(value = "批量删除指定ID的记录")
+//    @PostMapping("/del/batch")
+//    public Boolean deleteBatch(@RequestBody List<Integer> ids) {
+//        return patrolStatusService.removeByIds(ids);
+//    }
 
-    @ApiOperation(value = "查询所有记录")
+    @ApiOperation(value = "web端接口：查询所有巡查员状态记录")
     @GetMapping
     public List<PatrolStatus> findAll() {
         return patrolStatusService.list();
     }
 
-    @ApiOperation(value = "查询指定ID的记录")
+    @ApiOperation(value = "测试接口：查询指定ID的巡查员状态记录")
     @GetMapping("/{id}")
     public PatrolStatus findOne(@PathVariable Integer id) {
         return patrolStatusService.getById(id);
     }
 
-    @ApiOperation(value = "分页查询")
+    @ApiOperation(value = "web端接口：巡查员状态记录的分页查询")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "pageNum", value = "要查询第几页", dataType = "int", required = true),
             @ApiImplicitParam(name = "pageSize", value = "每页有几条记录", dataType = "int", required = true),
