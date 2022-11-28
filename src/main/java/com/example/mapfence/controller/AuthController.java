@@ -3,6 +3,7 @@ package com.example.mapfence.controller;
 import com.example.mapfence.dto.UserLoginParam;
 import com.example.mapfence.entity.User;
 import com.example.mapfence.service.AuthService;
+import com.example.mapfence.service.InfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,8 @@ import java.util.Map;
 public class AuthController {
     @Resource
     private AuthService authService;
+    @Resource
+    private InfoService infoService;
     @Value("${jwt.tokenHeader}")
     private String tokenHeader;
     @Value("${jwt.tokenHead}")
@@ -48,13 +51,15 @@ public class AuthController {
         String password = userLoginParam.getPassword();
         Map<String, String> tokenMap = new HashMap<>();
         if (username == null || password == null) {
-            tokenMap.put("error", "username or password is null");
+            tokenMap.put("error_message", "username or password is null");
             return tokenMap;
         }
         String token = authService.login(username, password);
         if (token == null) {
-            return null;
+            tokenMap.put("error_message", "username or password is not correct");
+            return tokenMap;
         }
+        tokenMap = infoService.getInfo();
         tokenMap.put("token", token);
         tokenMap.put("tokenHead", tokenHead);
         return tokenMap;
