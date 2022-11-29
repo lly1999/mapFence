@@ -70,12 +70,6 @@ public class PatrolStatusController {
         patrolStatusService.setStatus(phone, Integer.valueOf(status));
     }
 
-    @PostMapping("/test")
-    public void test(@RequestBody String params, HttpServletRequest servletRequest) {
-        System.out.println(params);
-    }
-
-
     @ApiOperation(value = "web端接口：查询指定巡查员指定日期的状态")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(name = "patrol_id", value = "巡查员表中的id字段", dataType = "int", required = true),
