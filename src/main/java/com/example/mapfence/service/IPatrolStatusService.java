@@ -27,7 +27,7 @@ public interface IPatrolStatusService extends IService<PatrolStatus> {
 
     List<PatrolStatus> selectByPatrolIdAndDate(Integer patrolId, String date);
 
-    void setStatus(String patrolTelephone, Integer status, String date);
+    void setStatus(String patrolTelephone, Integer status);
 
     List<PatrolStatus> selectByConditions(Integer patrolId, String date, Boolean atWork,
                                           Boolean vacation, Boolean vacationDefer);

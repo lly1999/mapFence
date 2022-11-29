@@ -1,13 +1,19 @@
 package com.example.mapfence.controller;
 
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.mapfence.component.JwtTokenUtil;
 import com.example.mapfence.websocket.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,14 +47,32 @@ public class PatrolStatusController {
     @Resource
     private IPatrolStatusService patrolStatusService;
 
+    @Resource
+    private JwtTokenUtil jwtTokenUtil;
+
+    @Value("${jwt.tokenHeader}")
+    private String tokenHeader;
+
+    @Value("${jwt.tokenHead}")
+    private String tokenHead;
+
     @ApiOperation(value = "app端接口：设置巡查员当日状态")
     @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "patrolTelephone", value = "该巡查员的登录电话号", dataType = "String", required = true),
-            @ApiImplicitParam(name = "status", value = "0上班在岗，1下班打卡，2轮休，3请假", dataType = "int", required = true),
+            @ApiImplicitParam(name = "params", value = "{status:}", dataType = "JSON", required = true),
     })
-    @PostMapping("/status/set_status/{patrolTelephone}/{status}/{date}")
-    public void setStatus(@PathVariable String patrolTelephone, @PathVariable Integer status, @RequestParam(required = false) String date) {
-        patrolStatusService.setStatus(patrolTelephone, status, date);
+    @PostMapping("/status/set_status")
+    public void setStatus(@RequestBody String params, HttpServletRequest servletRequest) {
+        // 获取phone
+        String phone = jwtTokenUtil.getUserNameFromToken(servletRequest.getHeader(tokenHeader).substring(this.tokenHead.length()));
+        // 获取status
+        JSONObject jsonObject = JSON.parseObject(params);
+        String status = jsonObject.getString("status");
+        patrolStatusService.setStatus(phone, Integer.valueOf(status));
+    }
+
+    @PostMapping("/test")
+    public void test(@RequestBody String params, HttpServletRequest servletRequest) {
+        System.out.println(params);
     }
 
 

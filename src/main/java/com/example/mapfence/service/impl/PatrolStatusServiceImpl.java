@@ -72,7 +72,7 @@ public class PatrolStatusServiceImpl extends ServiceImpl<PatrolStatusMapper, Pat
     }
 
     @Override
-    public void setStatus(String patrolTelephone, Integer status, String date) {
+    public void setStatus(String patrolTelephone, Integer status) {
         Integer patrolId = telephone2PatrolId(patrolTelephone);
 
         // 当前日期和时间
@@ -110,14 +110,11 @@ public class PatrolStatusServiceImpl extends ServiceImpl<PatrolStatusMapper, Pat
         }
         // 轮休
         else if(status == 2) {
-            if(!selectByPatrolIdAndDate(patrolId, date).isEmpty()) {
+            if(!selectByPatrolIdAndDate(patrolId, dateString).isEmpty()) {
                 log.error("该巡查员当天已有记录，无法设置轮休状态");
             }
-            else if(!StringUtils.isNotEmpty(date)) {
-                log.error("请指定轮休日期");
-            }
             else {
-                LocalDate _date = LocalDate.parse(date);
+                LocalDate _date = LocalDate.parse(dateString);
                 patrolStatus.setPatrolId(patrolId);
                 patrolStatus.setDate(_date);
                 patrolStatus.setVacationDefer(true);
@@ -126,14 +123,11 @@ public class PatrolStatusServiceImpl extends ServiceImpl<PatrolStatusMapper, Pat
         }
         // 请假
         else if (status == 3) {
-            if(!selectByPatrolIdAndDate(patrolId, date).isEmpty()) {
+            if(!selectByPatrolIdAndDate(patrolId, dateString).isEmpty()) {
                 log.error("该巡查员当天已有记录，无法设置请假状态");
             }
-            else if(!StringUtils.isNotEmpty(date)) {
-                log.error("请指定请假日期");
-            }
             else {
-                LocalDate _date = LocalDate.parse(date);
+                LocalDate _date = LocalDate.parse(dateString);
                 patrolStatus.setPatrolId(patrolId);
                 patrolStatus.setDate(_date);
                 patrolStatus.setVacation(true);
