@@ -92,6 +92,8 @@ public class PatrolStatusServiceImpl extends ServiceImpl<PatrolStatusMapper, Pat
                 patrolStatus.setDate(today);
                 patrolStatus.setOnWork(now);
                 patrolStatus.setAtWork(true);
+                patrolStatus.setVacation(false);
+                patrolStatus.setVacationDefer(false);
                 patrolStatusMapper.insert(patrolStatus);
             }
         }
@@ -117,6 +119,8 @@ public class PatrolStatusServiceImpl extends ServiceImpl<PatrolStatusMapper, Pat
                 LocalDate _date = LocalDate.parse(dateString);
                 patrolStatus.setPatrolId(patrolId);
                 patrolStatus.setDate(_date);
+                patrolStatus.setAtWork(false);
+                patrolStatus.setVacation(false);
                 patrolStatus.setVacationDefer(true);
                 patrolStatusMapper.insert(patrolStatus);
             }
@@ -130,7 +134,9 @@ public class PatrolStatusServiceImpl extends ServiceImpl<PatrolStatusMapper, Pat
                 LocalDate _date = LocalDate.parse(dateString);
                 patrolStatus.setPatrolId(patrolId);
                 patrolStatus.setDate(_date);
+                patrolStatus.setAtWork(false);
                 patrolStatus.setVacation(true);
+                patrolStatus.setVacationDefer(false);
                 patrolStatusMapper.insert(patrolStatus);
             }
         }
@@ -142,9 +148,12 @@ public class PatrolStatusServiceImpl extends ServiceImpl<PatrolStatusMapper, Pat
         wrapper.eq("patrol_id", patrolId);
         if(StringUtils.isNotEmpty(date))
             wrapper.eq("date", date);
-        wrapper.eq("at_work", atWork);
-        wrapper.eq("vacation", vacation);
-        wrapper.eq("vacation_defer", vacationDefer);
+        if(atWork != null)
+            wrapper.eq("at_work", atWork);
+        if(vacation != null)
+            wrapper.eq("vacation", vacation);
+        if(vacationDefer != null)
+            wrapper.eq("vacation_defer", vacationDefer);
         return patrolStatusMapper.selectList(wrapper);
     }
 
