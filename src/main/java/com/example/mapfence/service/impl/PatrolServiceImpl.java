@@ -5,6 +5,7 @@ import com.example.mapfence.entity.Patrol;
 import com.example.mapfence.mapper.PatrolMapper;
 import com.example.mapfence.service.IPatrolService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import springfox.documentation.schema.Example;
 
@@ -43,4 +44,17 @@ public class PatrolServiceImpl extends ServiceImpl<PatrolMapper, Patrol> impleme
     public List<Patrol> selectByTelephone(String telephone) {
         return patrolMapper.selectByTelephone(telephone);
     }
+
+    @Override
+    public List<Patrol> selectByConditions(Integer regionId, String department, String identity) {
+        QueryWrapper<Patrol> wrapper = new QueryWrapper<>();
+        if(regionId != null)
+            wrapper.eq("related_region", regionId);
+        if(StringUtils.isNotEmpty(department))
+            wrapper.eq("department", department);
+        if(StringUtils.isNotEmpty(identity))
+            wrapper.eq("identity", identity);
+        return patrolMapper.selectList(wrapper);
+    }
+
 }

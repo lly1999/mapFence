@@ -15,11 +15,20 @@ import java.util.List;
  */
 public interface IPatrolStatusService extends IService<PatrolStatus> {
 
-    public boolean isRecordExist(Integer patrol_id, String date);
+    public boolean isRecordExist(Integer patrolId, String date);
 
-    public Integer selectIdByMultiId(Integer patrol_id, String date);
+    public Integer selectIdByMultiId(Integer patrolId, String date);
 
     public List<PatrolStatus> selectAllByDate(String date);
 
-    public PatrolStatus selectStatusByMultiId(Integer patrol_id, String date);
+    public PatrolStatus selectStatusByMultiId(Integer patrolId, String date);
+
+    Integer telephone2PatrolId(String patrolTelephone);
+
+    List<PatrolStatus> selectByPatrolIdAndDate(Integer patrolId, String date);
+
+    void setStatus(String patrolTelephone, Integer status);
+
+    List<PatrolStatus> selectByConditions(Integer patrolId, String date, Boolean atWork,
+                                          Boolean vacation, Boolean vacationDefer);
 }

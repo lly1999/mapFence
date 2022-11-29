@@ -24,4 +24,5 @@ public interface PatrolStatusMapper extends BaseMapper<PatrolStatus> {
     List<PatrolStatus> selectAllByDate(@Param("date") String date);
 
     PatrolStatus selectStatusByMultiId(@Param("patrol_id") Integer patrol_id, @Param("date") String date);
+
 }
